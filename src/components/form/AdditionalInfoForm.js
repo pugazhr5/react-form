@@ -1,28 +1,9 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 
-const AdditionalInfoForm = ({ errors, formData }) => {
-  // Remove error highlighting on input change
-  const removeError = (e) => {
-    e.target.classList.remove('error')
-  }
+import Input from '../common/Input'
+import TextArea from '../common/TextArea'
 
-  // Highlight fields with validation errors
-  useEffect(() => {
-    Object.keys(errors).forEach((field) => {
-      document.getElementById(field).classList.add('error')
-    })
-  }, [errors])
-
-  // Persist form data
-  useEffect(() => {
-    Object.keys(formData).forEach((field) => {
-      const element = document.getElementById(field)
-      if (element) return (element.value = formData[field])
-
-      document.getElementById(`live_in_us_${formData[field]}`).checked = true
-    })
-  }, [formData])
-
+const AdditionalInfoForm = ({ errors, formData, handleBack, handleNext }) => {
   return (
     <>
       <div className="form-field">
@@ -55,23 +36,34 @@ const AdditionalInfoForm = ({ errors, formData }) => {
 
       <div className="form-field">
         <label htmlFor="git_profile">Git profile</label>
-        <input
+        <Input
           type="url"
           name="git_profile"
           id="git_profile"
-          onChange={removeError}
+          value={formData['git_profile']}
+          error={errors['git_profile']}
         />
       </div>
 
       <div className="form-field">
         <label htmlFor="about_you">About you</label>
-        <textarea
-          type="text"
+        <TextArea
           rows={5}
           name="about_you"
           id="about_you"
-          onChange={removeError}
+          value={formData['about_you']}
+          error={errors['about_you']}
         />
+      </div>
+
+      <div className="buttons-container">
+        <button className="next" onClick={handleNext}>
+          Next
+        </button>
+
+        <button className="back" onClick={handleBack}>
+          Back
+        </button>
       </div>
     </>
   )

@@ -333,12 +333,19 @@ button.next {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--success-color);
   min-height: 6em;
 }
 
 .form-status-container.error {
+  color: var(--success-color);
+}
+
+.form-status-container.error {
   color: var(--error-color);
+}
+
+.uploader.error {
+  border-color: var(--error-color);
 }
 
 /* footer */

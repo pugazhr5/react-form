@@ -8,7 +8,10 @@ const validationSchema = [
       format:
         "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$"
     },
-    phone_number: { type: 'string' }
+    phone_number: {
+      type: 'string',
+      format: '^((([0-9]{3}))|([0-9]{3}))[-s.]?[0-9]{3}[-s.]?[0-9]{4}$'
+    }
   },
   {
     live_in_us: { required: true, type: 'boolean' },
@@ -28,6 +31,8 @@ export const validateForm = (step, data) => {
   let errors = {}
   Object.entries(validationSchema[step]).forEach(([field, validations]) => {
     const value = data[field]
+
+    if (!validations.required && !value) return
 
     if (validations.required === true && !value)
       return (errors[field] = 'required')

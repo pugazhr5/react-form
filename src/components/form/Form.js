@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react'
+import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import CoverLetterForm from './CoverLetterForm'
@@ -7,18 +7,54 @@ import PersonalInfoForm from './PersonalInfoForm'
 import AdditionalInfoForm from './AdditionalInfoForm'
 import { submitForm } from '../../redux/actions'
 import { validateForm } from '../../utils/formValidator'
+import Status from './Status'
 
 /** Render form fields based on current step */
-const FormforCurrentStep = ({ step, errors, formData }) => {
+const FormforCurrentStep = ({
+  step,
+  formData,
+  errors,
+  handleBack,
+  handleNext
+}) => {
   switch (step) {
     case 0:
-      return <PersonalInfoForm errors={errors} formData={formData} />
+      return (
+        <PersonalInfoForm
+          formData={formData}
+          errors={errors}
+          handleNext={handleNext}
+        />
+      )
     case 1:
-      return <AdditionalInfoForm errors={errors} formData={formData} />
+      return (
+        <AdditionalInfoForm
+          formData={formData}
+          errors={errors}
+          handleBack={handleBack}
+          handleNext={handleNext}
+        />
+      )
     case 2:
-      return <ResumeForm errors={errors} />
+      return (
+        <ResumeForm
+          formData={formData}
+          errors={errors}
+          handleBack={handleBack}
+          handleNext={handleNext}
+        />
+      )
+    case 3:
+      return (
+        <CoverLetterForm
+          formData={formData}
+          errors={errors}
+          handleBack={handleBack}
+          handleNext={handleNext}
+        />
+      )
     default:
-      return <CoverLetterForm errors={errors} />
+      return <Status />
   }
 }
 
@@ -26,12 +62,9 @@ const Form = () => {
   const dispatch = useDispatch()
   const [step, setStep] = useState(0)
   const [errors, setErrors] = useState({})
-  const formRef = useRef()
-  const [formDataForAPI, setFormDataForAPI] = useState([{}, {}, {}, {}])
-  const { loading, status } = useSelector((state) => ({
-    loading: state.submitForm.loading,
-    status: state.submitForm.status
-  }))
+  const status = useSelector((state) => state.submitForm.status)
+  const loading = useSelector((state) => state.submitForm.loading)
+  const formData = useSelector((state) => state.formData)
 
   // Title for each step
   const formTitles = [
@@ -40,14 +73,6 @@ const Form = () => {
     'Resume',
     'Cover Letter'
   ]
-
-  const isFirstStep = step === 0
-  const isLastStep = step === formTitles.length - 1
-  const submitButtonText = isLastStep
-    ? loading
-      ? 'Submitting...'
-      : 'Submit'
-    : 'Next'
 
   // Go to previous step
   const handleBack = (e) => {
@@ -59,58 +84,33 @@ const Form = () => {
   const handleNext = (e) => {
     e.preventDefault()
 
-    const data = Object.fromEntries(new FormData(formRef.current).entries())
-    const validationErrors = validateForm(step, data)
+    const validationErrors = validateForm(step, formData)
     setErrors(validationErrors)
 
-    // Prevent next step incase of any validation errors
+    // Prevent Next step if any validation errors
     if (Object.keys(validationErrors).length) return
 
-    let updatedFormData = [...formDataForAPI]
-    updatedFormData[step] = data
+    if (step === formTitles.length - 1) dispatch(submitForm(formData))
 
-    if (isLastStep) {
-      return dispatch(submitForm(updatedFormData))
-    }
-    console.log(updatedFormData)
-    setFormDataForAPI(updatedFormData)
     setStep((currentStep) => currentStep + 1)
   }
 
   return (
     <div className="form-container">
-      {status ? (
-        status === 'success' ? (
-          <div className="form-status-container">
-            <div>Your form submitted successfully!</div>
-          </div>
-        ) : (
-          <div className="form-status-container error">
-            <div>Something went wrong please try again later!</div>
-          </div>
-        )
+      {status || loading ? (
+        <Status status={status} loading={loading} />
       ) : (
         <div className="form-content-container">
           <h2 className="form-title">{formTitles[step]}</h2>
 
-          <form name="form" ref={formRef}>
+          <form name="form">
             <FormforCurrentStep
               step={step}
+              formData={formData}
               errors={errors}
-              formData={formDataForAPI[step]}
+              handleBack={handleBack}
+              handleNext={handleNext}
             />
-
-            <div className="buttons-container">
-              <button className="next" onClick={handleNext}>
-                {submitButtonText}
-              </button>
-
-              {!isFirstStep && (
-                <button className="back" onClick={handleBack}>
-                  Back
-                </button>
-              )}
-            </div>
           </form>
         </div>
       )}
