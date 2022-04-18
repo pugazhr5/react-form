@@ -336,7 +336,7 @@ button.next {
   min-height: 6em;
 }
 
-.form-status-container.error {
+.form-status-container.success {
   color: var(--success-color);
 }
 
