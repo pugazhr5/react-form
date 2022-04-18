@@ -1,31 +1,15 @@
 import { actions } from './actions'
 
 // Initial app state
-// const initialState = {
-//   formData: {
-//     first_name: '',
-//     last_name: '',
-//     email: '',
-//     phone_number: '',
-//     live_in_us: 'true',
-//     git_profile: '',
-//     about_you: '',
-//     cv: '',
-//     cover_letter: ''
-//   },
-//   fileData: {}
-//   submitForm: {},
-// }
-
 const initialState = {
   formData: {
-    first_name: 'Pugazh',
-    last_name: 'R',
-    email: 'p@r.com',
-    phone_number: '0123456789',
+    first_name: '',
+    last_name: '',
+    email: '',
+    phone_number: '',
     live_in_us: 'true',
-    git_profile: 'https://github.com/a',
-    about_you: "I'm a developer",
+    git_profile: '',
+    about_you: '',
     cv: '',
     cover_letter: ''
   },
